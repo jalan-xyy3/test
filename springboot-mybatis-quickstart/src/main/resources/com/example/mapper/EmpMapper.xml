@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.EmpMapper">
+    <select id="list" resultType="com.example.model.Emp">
+        <include refid="selectEmpSql"></include>
+        <where>
+            <if test="null != name">
+                name like CONCAT('%', #{name}, '%')
+            </if>
+            <if test="null != gender">
+                and gender = #{gender}
+            </if>
+            <if test="null != beginDate and null != endDate">
+                and entrydate between #{beginDate} and #{endDate}
+            </if>
+        </where>
+        order by update_time desc
+    </select>
+
+    <update id="updateEmp2">
+        update emp
+        <set>
+            <if test="userName != null">username=#{userName},</if>
+            <if test="password != null">password=#{password},</if>
+            <if test="name != null">name=#{name},</if>
+            <if test="gender != null">gender=#{gender},</if>
+            <if test="image != null">image=#{image},</if>
+            <if test="job != null">job=#{job},</if>
+            <if test="entrydate != null">entrydate=#{entrydate},</if>
+            <if test="deptId != null">dept_id=#{deptId},</if>
+            <if test="createTime != null">create_time=#{createTime},</if>
+            <if test="updateTime != null">update_time=#{updateTime}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteEmpByIds">
+        delete from emp where id in
+        <foreach collection="list" index="index" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <sql id="selectEmpSql">
+        select id,
+               username,
+               password,
+               name,
+               gender,
+               image,
+               job,
+               entrydate,
+               dept_id,
+               create_time,
+               update_time
+        from emp (nolock)
+    </sql>
+</mapper>
